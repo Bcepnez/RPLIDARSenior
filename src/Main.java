@@ -1,5 +1,4 @@
 import java.awt.BorderLayout;
-import java.awt.Canvas;
 import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,8 +16,12 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-public class Main {
+public class Main extends JFrame{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JFrame frame;
 	private JTextField statusMessage;
 
@@ -78,11 +81,12 @@ public class Main {
             e.printStackTrace();
         } 
 	}
-	double[] distances;
-	double[] angles;
-	int[] CoOrX;
-	int[] CoOrY;
-	double[] heightLevel;
+	ArrayList<Double> distances;
+	ArrayList<Double> angles;
+	ArrayList<Double> CoordinateX;
+	ArrayList<Double> CoordinateY;
+	ArrayList<Double> CoordinateZ;
+	final static double maxDistance = 800;
 	int count=0;
 	private void WriteCSV() {
     	// The name of the file to open.
@@ -93,7 +97,7 @@ public class Main {
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
             for(int i = 0;i<count;i++){	
-            	bufferedWriter.write(distances[i]+","+angles[i]+","+CoOrX[i]+","+CoOrY[i]+","+heightLevel[i]);
+            	bufferedWriter.write(distances.get(i)+","+angles.get(i)+","+CoordinateX.get(i)+","+CoordinateY.get(i)+","+CoordinateZ.get(i));
             	bufferedWriter.newLine(); 
             }
             bufferedWriter.close();
@@ -107,11 +111,12 @@ public class Main {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		distances = new double[10000];
-		angles = new double[10000];
-		heightLevel = new double[10000];
-		CoOrX = new int[10000];
-		CoOrY = new int[10000];
+		distances = new ArrayList<Double>();
+		angles = new ArrayList<Double>();		
+		CoordinateX = new ArrayList<Double>();
+		CoordinateY = new ArrayList<Double>();
+		CoordinateZ = new ArrayList<Double>();
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 906, 543);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -136,34 +141,32 @@ public class Main {
 			public void actionPerformed(ActionEvent arg0) {
 				count = 0;
 				ReadCSV();
-				MAP map = new MAP();
 				for(int i = 0 ; i < setData.size();i++){
 					double ang = Math.toRadians(setData.get(i).getAngle());
 					double distance = setData.get(i).getDistance();
 					double hight = setData.get(i).getHeight();
-					double Y = (distance)*Math.cos(ang);
-					double X = (distance)*Math.sin(ang);
-					int CoX = (int) Math.floor(X);
-					int CoY = (int) Math.floor(Y);
-					System.out.println("Co-Ordinate of "+distance+":"+setData.get(i).getAngle()+" ("+CoX+" : "+CoY+" : "+hight+")");
-					distances[count] = distance;
-					angles[count] = setData.get(i).getAngle();
-					CoOrX[count] = CoX;
-					CoOrY[count] = CoY;
-					heightLevel[count] = setData.get(i).getHeight();
+					double Y = (distance)*Math.cos(ang)+maxDistance;
+					double X = (distance)*Math.sin(ang)+maxDistance;
+//					int CoX = (int) Math.floor(X);
+//					int CoY = (int) Math.floor(Y);
+					CoordinateX.add(X);
+					CoordinateY.add(Y);
+					CoordinateZ.add(hight);
+					distances.add(setData.get(i).getDistance());
+					angles.add(setData.get(i).getAngle());
+					
+					System.out.println("Co-Ordinate of "+distance+":"+setData.get(i).getAngle()+" ("+
+							CoordinateX.get(i)+" : "+
+							CoordinateY.get(i)+" : "+
+							CoordinateZ.get(i)+")");
 					count++;
-//					map.setDat(CoX+50,(CoY*-1)+50);
 				}
 				statusMessage.setText("Write to file complete!");
-//				map.show();
 				WriteCSV();
 			}
 		});
 		btnCalculate.setBounds(12, 346, 319, 78);
 		panel.add(btnCalculate);
-		
-		Canvas canvas = new Canvas();
-		canvas.setBounds(348, 10, 530, 476);
-		panel.add(canvas);
 	}
 }
+

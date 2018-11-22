@@ -16,6 +16,20 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.jzy3d.chart.AWTChart;
+import org.jzy3d.chart.Chart;
+import org.jzy3d.colors.Color;
+import org.jzy3d.colors.ColorMapper;
+import org.jzy3d.colors.colormaps.ColorMapRainbow;
+import org.jzy3d.maths.Coord3d;
+import org.jzy3d.maths.Range;
+import org.jzy3d.plot3d.builder.Builder;
+import org.jzy3d.plot3d.builder.Mapper;
+import org.jzy3d.plot3d.builder.concrete.OrthonormalGrid;
+import org.jzy3d.plot3d.primitives.Shape;
+import org.jzy3d.plot3d.rendering.canvas.Quality;
+import javax.swing.JSplitPane;
+
 public class Main extends JFrame{
 
 	/**
@@ -58,7 +72,7 @@ public class Main extends JFrame{
 	}
 	private static String dir = System.getProperty("user.dir");
 	private void ReadCSV() {
-		String Filedir = dir+"/datatest.csv";
+		String Filedir = dir+"/datatest2.csv";
 		BufferedReader br = null;
         String line = "";
         String cvsSplitBy = ",";
@@ -86,6 +100,7 @@ public class Main extends JFrame{
 	ArrayList<Double> CoordinateX;
 	ArrayList<Double> CoordinateY;
 	ArrayList<Double> CoordinateZ;
+	ArrayList<Coord3d> coOrdinate;
 	final static double maxDistance = 800;
 	int count=0;
 	private void WriteCSV() {
@@ -116,6 +131,7 @@ public class Main extends JFrame{
 		CoordinateX = new ArrayList<Double>();
 		CoordinateY = new ArrayList<Double>();
 		CoordinateZ = new ArrayList<Double>();
+		coOrdinate = new ArrayList<Coord3d>();
 		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 906, 543);
@@ -147,14 +163,14 @@ public class Main extends JFrame{
 					double hight = setData.get(i).getHeight();
 					double Y = (distance)*Math.cos(ang)+maxDistance;
 					double X = (distance)*Math.sin(ang)+maxDistance;
-//					int CoX = (int) Math.floor(X);
-//					int CoY = (int) Math.floor(Y);
 					CoordinateX.add(X);
 					CoordinateY.add(Y);
 					CoordinateZ.add(hight);
 					distances.add(setData.get(i).getDistance());
 					angles.add(setData.get(i).getAngle());
 					
+					Coord3d temp = new Coord3d(CoordinateX.get(i),CoordinateY.get(i),CoordinateZ.get(i));
+					coOrdinate.add(temp);
 					System.out.println("Co-Ordinate of "+distance+":"+setData.get(i).getAngle()+" ("+
 							CoordinateX.get(i)+" : "+
 							CoordinateY.get(i)+" : "+
